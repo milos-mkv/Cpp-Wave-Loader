@@ -19,99 +19,99 @@
 
 struct WaveFile
 {
-	// The canonical WAVE format starts with the RIFF header:
+    // The canonical WAVE format starts with the RIFF header:
     
     /// @brief  Contains the letters "RIFF" in ASCII form (0x52494646 big-endian form).
     ///
-	int chunk_id;
+    int chunk_id;
 
     /// @brief  36 + SubChunk2Size, or more precisely: 4 + (8 + SubChunk1Size) + (8 + SubChunk2Size)
     ///         This is the size of the rest of the chunk following this number. 
     ///         This is the size of the entire file in bytes minus 8 bytes for the  two fields not included in this count: ChunkID and ChunkSize.
     ///
-	int chunk_size;
+    int chunk_size;
 
     /// @brief  Contains the letters "WAVE" (0x57415645 big-endian form).
     ///
-	int format;
+    int format;
 
-	// The "WAVE" format consists of two subchunks: "fmt " and "data":
-	// The "fmt " subchunk describes the sound data's format:
+    // The "WAVE" format consists of two subchunks: "fmt " and "data":
+    // The "fmt " subchunk describes the sound data's format:
 
     /// @brief  Contains the letters "fmt " (0x666d7420 big-endian form).
     ///
-	int subchunk_1_id;
+    int subchunk_1_id;
 
     /// @brief  16 for PCM.  This is the size of the rest of the Subchunk which follows this number.
     ///
-	int subchunk_1_size;
+    int subchunk_1_size;
 
     /// @brief  PCM = 1 (i.e. Linear quantization) Values other than 1 indicate some form of compression. 
     ///
-	short audio_format;
+    short audio_format;
 
     /// @brief  Mono = 1, Stereo = 2, etc. 
     ///
-	short num_channels;
+    short num_channels;
 
-	/// @brief  8000, 44100, etc. 
-	///
-	int sample_rate;
+    /// @brief  8000, 44100, etc. 
+    ///
+    int sample_rate;
 
-	/// @brief  == SampleRate * NumChannels * BitsPerSample/8 
-	///
-	int byte_rate;
+    /// @brief  == SampleRate * NumChannels * BitsPerSample/8 
+    ///
+    int byte_rate;
 
     /// @brief  == NumChannels * BitsPerSample/8
     ///         The number of bytes for one sample including all channels. I wonder what happens when this number isn't an integer?
     ///
-	short block_align;
+    short block_align;
 
     /// @brief  8 bits = 8, 16 bits = 16, etc.
     ///
-	short bits_per_sample;
+    short bits_per_sample;
 
-	// Here should come some extra parameters which i will avoid.
-	// The "data" subchunk contains the size of the data and the actual sound:
+    // Here should come some extra parameters which i will avoid.
+    // The "data" subchunk contains the size of the data and the actual sound:
     
     /// @brief  Contains the letters "data" (0x64617461 big-endian form).
     ///
-	int subchunk_2_id;
+    int subchunk_2_id;
 
     /// @brief  == NumSamples * NumChannels * BitsPerSample/8
     ///         This is the number of bytes in the data. You can also think of this as the size of the read of the subchunk following this number.
-	///
+    ///
     int subchunk_2_size;
 
     /// @brief  The actual sound data.
     ///
-	char * data;
+    char * data;
 };
 
 static int is_big_endian()
 {
-	int a = 1;
-	return !((char*)&a)[0];
+    int a = 1;
+    return !((char*)&a)[0];
 }
 
 static int convert_to_int(char *buffer, int len)
 {
-	int a = 0;
-	if(!is_big_endian())
-	{
-		for(int i = 0; i < len; i++)
-		{
-			((char*) &a)[i] = buffer[i];
-		}
-	}
-	else
-	{
-		for(int i = 0; i < len; i++)
-		{
-			((char*) &a)[3- i] = buffer[i];
-		}
-	}
-	return a;
+    int a = 0;
+    if(!is_big_endian())
+    {
+        for(int i = 0; i < len; i++)
+        {
+            ((char*) &a)[i] = buffer[i];
+        }
+    }
+    else
+    {
+        for(int i = 0; i < len; i++)
+        {
+            ((char*) &a)[3- i] = buffer[i];
+        }
+    }
+    return a;
 }
 
 //------------------------------------------------------------------------------
@@ -127,9 +127,9 @@ WaveFile * LoadeWaveFile(const char * file_path)
     char buffer[4];
     file.read(buffer, 4);
     if(strncmp(buffer, "RIFF", 4) != 0)
-	{
-		printf("This is not valid WAV file!");
-	}
+    {
+        printf("This is not valid WAV file!");
+    }
     wave_file->chunk_id = convert_to_int(buffer, 4);
     file.read(buffer, 4);
     wave_file->chunk_size = convert_to_int(buffer, 4);
