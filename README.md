@@ -1,5 +1,5 @@
 # Cpp Wave Loader
-Utility library for C++ for loading WAVE audio file.
+C++ utility library for loading WAVE audio file.
 
 ## Example
 ~~~~~~~~~~~~~.cpp
